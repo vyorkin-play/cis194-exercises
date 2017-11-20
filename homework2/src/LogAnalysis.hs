@@ -2,6 +2,7 @@
 module LogAnalysis where
 
 import Log
+import Data.Foldable (foldr')
 import Text.Read (readMaybe)
 
 parse :: String -> [LogMessage]
@@ -37,7 +38,7 @@ insert msg@(LogMessage _ timestamp' _) (Node left msg'@(LogMessage _ timestamp _
 insert _ (Node _ (Unknown _) _) = error "Unknown log message format"
 
 build :: [LogMessage] -> MessageTree
-build = foldr insert Leaf
+build = foldr' insert Leaf
 
 inOrder :: MessageTree -> [LogMessage]
 inOrder Leaf = []
