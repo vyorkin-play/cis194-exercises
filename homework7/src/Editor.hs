@@ -6,6 +6,7 @@ module Editor where
 import System.IO
 
 import Buffer
+import JoinList
 
 import Control.Exception
 import Control.Monad.State

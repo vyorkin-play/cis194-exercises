@@ -1,7 +1,11 @@
+{-# LANGUAGE FlexibleInstances #-}
 module JoinList where
 
-import Sized
 import Data.Monoid ((<>))
+
+import Buffer
+import Sized
+import Scrabble
 
 data JoinList m a = Empty
                   | Single m a
@@ -108,3 +112,26 @@ sizeJ (Append s _ _) = size' s
 
 size' :: (Sized b) => b -> Int
 size' = getSize . size
+
+scoreLine :: String -> JoinList Score String
+scoreLine "" = Empty
+scoreLine s = Single (scoreString s) s
+
+lineFromString :: String -> JoinList (Score, Size) String
+lineFromString "" = Empty
+lineFromString s = Single (scoreString s, Size 1) s
+
+instance Buffer (JoinList (Score, Size) String) where
+  toString Empty = ""
+  toString (Single _ s) = s
+  toString (Append _ l r) = toString l ++ toString r
+  fromString s = foldl (\acc l -> acc +++ lineFromString l) Empty . lines $ s
+  line = indexJ
+  replaceLine n s b | n >= 0 = takeJ (n - 1) b +++ lineFromString s +++ dropJ n b
+  replaceLine _ _ b = b
+  numLines Empty = 0
+  numLines (Single _ _) = 1
+  numLines (Append _ l r) = numLines l + numLines r
+  value Empty = 0
+  value (Single (Score n, _) _) = n
+  value (Append (Score n, _) _ _) = n
