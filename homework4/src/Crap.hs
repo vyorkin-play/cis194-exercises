@@ -1,7 +1,7 @@
 module Crap where
 
 vfoldr :: (a -> b -> b) -> b -> [a] -> b
-vfoldr _ z [] = z
+vfoldr _ z [] = undefined
 vfoldr f z (x:xs) = f x $ vfoldr f z xs
 
 vfoldl :: (b -> a -> b) -> b -> [a] -> b
